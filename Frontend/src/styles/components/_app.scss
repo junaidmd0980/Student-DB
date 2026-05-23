@@ -1,0 +1,15 @@
+.app {
+  min-height: 100vh;
+  background: #f8fafc;
+
+  &__body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  &__content {
+    min-width: 0;
+    padding: 24px;
+  }
+}

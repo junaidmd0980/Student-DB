@@ -1,0 +1,399 @@
+@use "../abstracts/variables" as v;
+
+// ===== SCROLLBAR FIX - NO SIDE SCROLLBAR =====
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  overflow-x: hidden;
+
+  // HIDE OVERLAY SCROLLBAR
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: v.$surface-color;
+  border-radius: 20px;
+  border: 1px solid v.$border-color;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // HIDE MODAL CARD SCROLLBAR
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+// ===== HIDE ALL MODAL & FORM SCROLLBARS =====
+.modal-overlay,
+.modal-card,
+.edit-form {
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Edge
+  }
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/Edge
+}
+
+// ===== TABLE STYLING =====
+.table-container {
+  width: 100%;
+  overflow: visible;
+  border-radius: 16px;
+  border: 1px solid v.$border-color;
+  background: v.$surface-color;
+}
+
+// ===== MODAL HEADER =====
+.modal-header h2,
+#update-student-title {
+  margin: 0;
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: v.$text-color;
+  font-family: v.$font-family-base;
+  border-bottom: 1px solid v.$border-color;
+  width: 100%;
+}
+
+// ===== MAIN FORM STYLING =====
+.edit-form,
+form {
+  display: grid;
+  gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.form-group:first-child {
+  margin-top: 1rem;
+}
+
+.createData {
+  text-align: center;
+  margin-bottom: 5%;
+}
+
+.form-title,
+form h1,
+form h2 {
+  margin: 0 0 0.5rem;
+  text-align: center;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: v.$text-color;
+  font-family: v.$font-family-base;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: v.$text-color;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  min-height: 52px;
+  padding: 0.875rem 1rem;
+  border: 2px solid v.$border-color;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.6);
+  color: v.$text-color;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: v.$font-family-base;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: v.$secondary-color;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  &:focus {
+    border-color: v.$primary-color;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &::placeholder {
+    color: v.$secondary-color;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+  padding-top: 1rem;
+}
+
+// ===== BUTTONS =====
+form button,
+form .btn,
+.table-action,
+.btn-danger,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: v.$font-family-base;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.table-action {
+  background: linear-gradient(135deg, v.$primary-color, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, v.$primary-dark, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.4);
+  }
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, v.$error-color, #dc3545);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.4);
+  }
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, v.$secondary-color, #6c757d);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(108, 117, 125, 0.3);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(108, 117, 125, 0.4);
+  }
+}
+
+form button:disabled,
+.table-action:disabled,
+.btn-danger:disabled,
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// ===== SELECT DROPDOWN CUSTOMIZATION =====
+.form-group select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 3rem;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    background-color: rgba(241, 245, 249, 0.5);
+  }
+}
+
+
+
+// ===== WARNING BAR =====
+.warning-bar {
+  margin: 1rem 0;
+  padding: 1.25rem;
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.2);
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &--danger {
+    border-color: rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);
+  }
+}
+
+// ===== DELETE FORM =====
+.delete-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+// ===== ACTION BUTTONS CONTAINER =====
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+
+  button,
+  .btn-danger,
+  .btn-secondary {
+    width: auto;
+    min-width: 160px;
+    max-width: 220px;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// ===== CARDS =====
+.card {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: linear-gradient(145deg, v.$surface-color, rgba(255, 255, 255, 0.5));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+// ===== FILTER GRID =====
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 1rem;
+  align-items: end;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+}
+
+// ===== TABLE ACTIONS =====
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// ===== MOBILE RESPONSIVE =====
+@media (max-width: 768px) {
+  .edit-form,
+  form {
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+
+  .form-title,
+  form h1,
+  form h2,
+  .modal-header h2,
+  #update-student-title {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  .delete-form {
+    padding: 1.5rem 1rem;
+    gap: 1.25rem;
+  }
+
+  .delete-actions {
+    flex-direction: column;
+    gap: 0.875rem;
+
+    button,
+    .btn-danger,
+    .btn-secondary {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+
+  .modal-overlay {
+    padding: 1rem;
+  }
+
+  .modal-card {
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .modal-header h2,
+  #update-student-title {
+    padding: 1rem 1rem 0.875rem;
+  }
+
+  .warning-bar {
+    padding: 1rem;
+    margin: 0.875rem 0;
+  }
+}

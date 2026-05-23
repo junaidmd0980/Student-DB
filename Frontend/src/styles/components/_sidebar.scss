@@ -1,0 +1,119 @@
+.sidebar {
+  width: 72px;
+  min-height: calc(100vh - 64px);
+  background: #0f172a;
+  color: #ffffff;
+  border-right: 1px solid #1e293b;
+  padding: 12px 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.25s ease, padding 0.25s ease, background 0.2s ease;
+
+  &--open {
+    width: 240px;
+    padding: 12px;
+  }
+
+  &--collapsed {
+    width: 72px;
+  }
+
+  &__top {
+    margin-bottom: 16px;
+  }
+
+  &__toggle {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: #1e293b;
+    color: #ffffff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background: #334155;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #60a5fa;
+      outline-offset: 2px;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__link {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #cbd5e1;
+    text-decoration: none;
+    overflow: hidden;
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    &--active {
+      background: #334155;
+      color: #ffffff;
+    }
+  }
+
+  &__icon {
+    width: 20px;
+    min-width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      flex-shrink: 0;
+      stroke-width: 2;
+    }
+  }
+
+  &__text {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, max-width 0.25s ease;
+  }
+
+  &__text--show {
+    opacity: 1;
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    min-height: auto;
+
+    &--open {
+      width: 220px;
+    }
+  }
+}

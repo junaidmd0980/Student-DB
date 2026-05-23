@@ -1,0 +1,227 @@
+@use "../abstracts/variables" as v;
+
+.table-card {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  border-radius: 18px;
+  background: linear-gradient(145deg, v.$surface-color, rgba(255, 255, 255, 0.65));
+  border: 1px solid v.$border-color;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+  z-index: 1;
+}
+
+table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: transparent;
+  font-family: v.$font-family-base;
+}
+
+thead th {
+  background: #f8fafc;
+  color: v.$text-color;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  padding: 16px 18px;
+  border-bottom: 1px solid v.$border-color;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+thead th:first-child {
+  border-top-left-radius: 18px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 18px;
+}
+
+tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+tbody td {
+  padding: 16px 18px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  color: v.$text-color;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+tbody tr:hover td {
+  background-color: #f8fbff;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-empty {
+  padding: 2rem;
+  text-align: center;
+  color: v.$secondary-color;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+// ===== TABLE ACTIONS =====
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.edit-btn {
+  background-color: rgba(37, 99, 235, 0.12);
+  color: v.$primary-color;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, v.$primary-color, #2563eb);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+  }
+}
+
+.delete-btn {
+  background-color: rgba(220, 53, 69, 0.12);
+  color: v.$error-color;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, v.$error-color, #dc3545);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.25);
+  }
+}
+
+.close-btn {
+  background-color: rgba(15, 23, 42, 0.08);
+  color: v.$text-color;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(15, 23, 42, 0.16);
+    transform: translateY(-2px);
+  }
+}
+
+// ===== MODAL =====
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v.$spacing-lg;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(145deg, v.$surface-color, rgba(255, 255, 255, 0.96));
+  border-radius: 20px;
+  border: 1px solid v.$border-color;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+}
+
+.delete-modal {
+  max-width: 500px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: v.$spacing-xl v.$spacing-lg v.$spacing-lg;
+  border-bottom: 1px solid v.$border-color;
+}
+
+.delete-preview {
+  padding: 0 v.$spacing-lg v.$spacing-lg;
+
+  .form-group & {
+    margin-bottom: v.$spacing-lg;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: v.$text-color;
+    font-size: 14px;
+  }
+}
+
+// ===== MOBILE =====
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: v.$spacing-md;
+  }
+
+  .modal-card {
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  table {
+    min-width: 640px;
+  }
+
+  thead th,
+  tbody td {
+    padding: 14px 12px;
+    font-size: 13px;
+  }
+
+  .table-actions {
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+}

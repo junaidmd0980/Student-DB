@@ -1,0 +1,27 @@
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin input-reset {
+  width: 100%;
+  outline: none;
+  border: none;
+  background: transparent;
+}
+
+@mixin card-spacing {
+  padding: 24px;
+  border-radius: 10px;
+}
+
+@mixin hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body {
+  @include hide-scrollbar;
+}

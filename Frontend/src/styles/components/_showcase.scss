@@ -1,0 +1,22 @@
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__footer {
+    margin-top: auto;
+  }
+}
