@@ -5,6 +5,7 @@ import {
   markLabAttendance,
   removeLabAttendance,
 } from "../services/labSessionService";
+import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel";
 
 function LabAttendanceSheet({ session }) {
   const [sessionData, setSessionData] = useState(null);
@@ -255,7 +256,7 @@ function LabAttendanceSheet({ session }) {
             </div>
           </div>
 
-          <div className="table-container">
+          <div className="lab-table-container">
             <table className="student-table attendance-table">
               <thead>
                 <tr>
@@ -305,51 +306,21 @@ function LabAttendanceSheet({ session }) {
         </div>
       </div>
 
-      {isDeleteOpen && (
-        <div className="modal-overlay" onClick={closeDeleteModal}>
-          <div
-            className="modal-card delete-form"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-attendance-title"
-          >
-            <div className="modal-header">
-              <h2 id="delete-attendance-title">Delete Attendance</h2>
-            </div>
-
-            <div className="warning-bar warning-bar--danger">
-              <p>
-                Are you sure you want to delete{" "}
-                <strong>
-                  {selectedAttendance?.student?.fullName || "this student"}
-                </strong>
-                ?
-              </p>
-            </div>
-
-            <div className="delete-actions">
-              <button
-                type="button"
-                className="btn-danger"
-                onClick={confirmDelete}
-                disabled={actionLoading}
-              >
-                {actionLoading ? "Deleting..." : "Delete"}
-              </button>
-
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={closeDeleteModal}
-                disabled={actionLoading}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        open={isDeleteOpen}
+        entity="attendance"
+        item={{name: selectedAttendance?.student?.fullName || "this student",}}
+        loading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title="Delete Attendance"
+        description={`You are about to remove the attendance record for ${selectedAttendance?.student?.fullName || "this student"}.`}
+        warning="This will permanently remove this student's attendance entry from the current lab session."
+        confirmLabel="Delete Attendance"
+        cancelLabel="Keep Attendance"
+        requireTypedConfirm={false}
+        confirmKeyword={selectedAttendance?.student?.fullName || ""}
+      />
     </>
   );
 }

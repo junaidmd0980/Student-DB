@@ -8,6 +8,7 @@ import {
 import { getDepartments } from "../../master-data/services/departmentService";
 import { getBatches } from "../../master-data/services/batchService";
 import { getSections } from "../../master-data/services/sectionService";
+import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel";
 import CustomSelect from "../../../shared/components/CustomSelect";
 
 function StudentTable({ filters }) {
@@ -463,48 +464,21 @@ function StudentTable({ filters }) {
         </div>
       )}
 
-      {isDeleteOpen && (
-        <div className="modal-overlay" onClick={closeDeleteModal}>
-          <div
-            className="modal-card delete-form"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-student-title"
-          >
-            <div className="modal-header">
-              <h2 id="delete-student-title">Delete Student</h2>
-            </div>
-
-            <div className="warning-bar warning-bar--danger">
-              <p>
-                Are you sure you want to delete{" "}
-                <strong>{selectedStudent?.fullName || "this student"}</strong>?
-              </p>
-            </div>
-
-            <div className="delete-actions">
-              <button
-                type="button"
-                className="btn-danger"
-                onClick={confirmDelete}
-                disabled={actionLoading}
-              >
-                {actionLoading ? "Deleting..." : "Delete"}
-              </button>
-
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={closeDeleteModal}
-                disabled={actionLoading}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmModal
+        open={isDeleteOpen}
+        entity="student"
+        item={selectedStudent}
+        loading={actionLoading}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title="Delete Student"
+        description={`You are about to delete ${selectedStudent?.fullName || "this student"}.`}
+        warning="This action will permanently delete this student record. Type the student name to confirm."
+        confirmLabel="Delete Student"
+        cancelLabel="Keep Student"
+        requireTypedConfirm={true}
+        confirmKeyword={selectedStudent?.fullName || ""}
+      />
     </>
   );
 }

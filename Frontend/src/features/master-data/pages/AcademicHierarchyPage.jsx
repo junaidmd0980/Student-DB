@@ -3,7 +3,7 @@ import HierarchyBreadcrumbs from "../components/HierarchyBreadcrumbs.jsx";
 import HierarchySummaryCard from "../components/HierarchySummaryCard.jsx";
 import EntityGrid from "../components/EntityGrid.jsx";
 import EntityFormModal from "../components/EntityFormModal.jsx";
-import DeleteConfirmModal from "../components/DeleteConfirmModal.jsx";
+import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel.jsx";
 import EmptyState from "../components/EmptyState.jsx";
 import LoadingGrid from "../components/LoadingGrid.jsx";
 import useAcademicHierarchy from "../hooks/useAcademicHierarchy.js";
