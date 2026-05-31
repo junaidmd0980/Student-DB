@@ -7,10 +7,12 @@
 @use "./components/table";
 @use "./components/navbar";
 @use "./components/sidebar";
+@use "./components/notifier";
 @use "./components/app";
 @use "./components/showcase";
 @use "./components/filter";
 @use "./components/customselect";
+@use "./components/Loader";
 @use "./components/labSession";
 @use "./pages/master-data";
 @use "./pages/students";

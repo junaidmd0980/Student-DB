@@ -121,6 +121,7 @@
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 6px 20px rgba(16, 24, 40, 0.05);
+  cursor: pointer;
 
   &__top {
     display: flex;
@@ -132,11 +133,11 @@
 
   &__body {
     flex: 1;
-    text-align: left;
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+    min-width: 0;
+  }
+
+  &__menu {
+    flex-shrink: 0;
   }
 
   &__title {
@@ -152,27 +153,9 @@
     color: #667085;
   }
 
-  &--create {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    border-style: dashed;
+  &:hover {
     border-color: #d0d5dd;
-    cursor: pointer;
-
-    &__icon {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 14px;
-      border-radius: 12px;
-      background: #f4f3ff;
-      color: #6941c6;
-      font-size: 28px;
-      font-weight: 500;
-    }
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
   }
 
   &--skeleton {
@@ -182,6 +165,55 @@
       background-size: 200% 100%;
       animation: shimmer 1.4s infinite;
     }
+  }
+}
+
+.entity-card--create {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 180px;
+  padding: 18px;
+  border: 1px dashed #d0d5dd;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: #b8c0cc;
+    box-shadow: 0 10px 24px rgba(16, 24, 40, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .entity-card--create__icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    background: #f4f3ff;
+    border: 1px solid #e4ddff;
+    color: #6941c6;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .entity-card__title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #101828;
+  }
+
+  .entity-card__meta {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #667085;
   }
 }
 

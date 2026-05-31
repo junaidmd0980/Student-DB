@@ -11,6 +11,7 @@ import { getSections } from "../../master-data/services/sectionService";
 import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel";
 import LabAttendanceSheet from "./LabAttendanceSheet";
 import CustomSelect from "../../../shared/components/CustomSelect";
+import Loader from "../../../shared/components/Loader";
 
 function LabSessionTable({ filters, refreshKey, onAttendanceViewChange }) {
   const [sessions, setSessions] = useState([]);
@@ -54,7 +55,10 @@ function LabSessionTable({ filters, refreshKey, onAttendanceViewChange }) {
   const loadSessions = async () => {
     try {
       setLoading(true);
-      const data = await getLabSessions();
+      const [data] = await Promise.all([
+        getLabSessions(),
+        new Promise((resolve) => setTimeout(resolve, 1000))
+      ])
       setSessions(Array.isArray(data) ? data : data?.data || []);
     } catch (error) {
       console.error("Failed to load lab sessions:", error);
@@ -300,7 +304,7 @@ function LabSessionTable({ filters, refreshKey, onAttendanceViewChange }) {
   };
 
   if (loading) {
-    return <p>Loading lab sessions...</p>;
+    return <Loader text="Loading lab sessions..."/>;
   }
 
   if (openedSession) {

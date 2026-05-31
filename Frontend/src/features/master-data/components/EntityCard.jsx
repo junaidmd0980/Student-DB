@@ -15,22 +15,18 @@ function getMeta(entity, item) {
   return `${count} ${count === 1 ? "student" : "students"}`;
 }
 
-
 function EntityCard({ entity, item, count = 0, onClick, onEdit, onDelete }) {
   return (
-    <div className="entity-card">
+    <div className="entity-card" onClick={onClick}>
       <div className="entity-card__top">
-        <button
-          type="button"
-          className="entity-card__body"
-          onClick={onClick}
-          disabled={!onClick}
-        >
+        <div className="entity-card__body">
           <h3 className="entity-card__title">{item.name}</h3>
           <p className="entity-card__meta">{getMeta(entity, item, count)}</p>
-        </button>
+        </div>
 
-        <EntityCardMenu onEdit={onEdit} onDelete={onDelete} />
+        <div className="entity-card__menu" onClick={(e) => e.stopPropagation()}>
+          <EntityCardMenu onEdit={onEdit} onDelete={onDelete} />
+        </div>
       </div>
     </div>
   );

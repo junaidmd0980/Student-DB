@@ -6,6 +6,7 @@ import {
   removeLabAttendance,
 } from "../services/labSessionService";
 import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel";
+import Loader from "../../../shared/components/Loader";
 
 function LabAttendanceSheet({ session }) {
   const [sessionData, setSessionData] = useState(null);
@@ -196,7 +197,7 @@ function LabAttendanceSheet({ session }) {
   };
 
   if (loading) {
-    return <p>Loading attendance...</p>;
+    return <Loader text="Loading attendance..."/>;
   }
 
   if (!sessionData?.session) {

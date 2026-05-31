@@ -10,6 +10,7 @@ import { getBatches } from "../../master-data/services/batchService";
 import { getSections } from "../../master-data/services/sectionService";
 import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel";
 import CustomSelect from "../../../shared/components/CustomSelect";
+import Loader from "../../../shared/components/Loader";
 
 function StudentTable({ filters }) {
   const [students, setStudents] = useState([]);
@@ -38,10 +39,15 @@ function StudentTable({ filters }) {
     const loadStudents = async () => {
       try {
         setLoading(true);
-        const data = await getStudents({
-          department: filters.department,
-          batch: filters.batch,
-        });
+
+        const [data] = await Promise.all([
+          getStudents({
+            department: filters.department,
+            batch: filters.batch,
+          }),
+          new Promise((resolve) => setTimeout(resolve, 1000)),
+        ]);
+
         setStudents(Array.isArray(data) ? data : data.data || []);
       } catch (error) {
         console.error("Failed to load students:", error);
@@ -53,6 +59,7 @@ function StudentTable({ filters }) {
 
     loadStudents();
   }, [filters.department, filters.batch]);
+
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -264,7 +271,7 @@ function StudentTable({ filters }) {
   };
 
   if (loading) {
-    return <p>Loading students...</p>;
+    return <Loader text="Loading students..."/>;
   }
 
   if (!filteredStudents.length) {

@@ -17,11 +17,12 @@ import {
   getSections,
   updateSection,
 } from "../services/sectionService";
+import { useError } from "../../../shared/context/ErrorContext.jsx";
 
 const initialModalState = {
   open: false,
-  mode: null, 
-  entity: null, 
+  mode: null,
+  entity: null,
   item: null,
 };
 
@@ -32,6 +33,8 @@ const initialFormState = {
 };
 
 function useAcademicHierarchy() {
+  const { showError, clearError } = useError();
+
   const [view, setView] = useState("home");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedBatch, setSelectedBatch] = useState(null);
@@ -51,18 +54,13 @@ function useAcademicHierarchy() {
   const [modal, setModal] = useState(initialModalState);
   const [formState, setFormState] = useState(initialFormState);
 
-  const [feedback, setFeedback] = useState({
-    type: "",
-    text: "",
-  });
-
   const normalizeList = (data) => {
     if (Array.isArray(data)) return data;
     if (Array.isArray(data?.data)) return data.data;
     return [];
   };
 
-  const getId = (item) => item?._id || item?.id;
+  const getId = (item) => item?._id || item?.id || null;
 
   const loadDepartments = useCallback(async () => {
     try {
@@ -76,13 +74,7 @@ function useAcademicHierarchy() {
       setDepartments(normalizeList(data));
     } catch (error) {
       setDepartments([]);
-      setFeedback({
-        type: "error",
-        text:
-          error?.response?.data?.message ||
-          error.message ||
-          "Failed to load departments",
-      });
+      showError(error.message || "Failed to load departments");
     } finally {
       setLoading((prev) => ({
         ...prev,
@@ -90,65 +82,74 @@ function useAcademicHierarchy() {
         departments: false,
       }));
     }
-  }, []);
+  }, [showError]);
 
-  const loadBatches = useCallback(async (departmentId) => {
-    if (!departmentId) {
-      setBatches([]);
-      return;
-    }
+  const loadBatches = useCallback(
+    async (departmentId) => {
+      if (!departmentId) {
+        setBatches([]);
+        return;
+      }
 
-    try {
-      setLoading((prev) => ({ ...prev, batches: true }));
+      try {
+        setLoading((prev) => ({ ...prev, batches: true }));
 
-      const data = await getBatches({ department: departmentId });
-      setBatches(normalizeList(data));
-    } catch (error) {
-      setBatches([]);
-      setFeedback({
-        type: "error",
-        text:
-          error?.response?.data?.message ||
-          error.message ||
-          "Failed to load batches",
-      });
-    } finally {
-      setLoading((prev) => ({ ...prev, batches: false }));
-    }
-  }, []);
+        const data = await getBatches({ department: departmentId });
+        setBatches(normalizeList(data));
+      } catch (error) {
+        setBatches([]);
+        showError(error.message || "Failed to load batches");
+      } finally {
+        setLoading((prev) => ({ ...prev, batches: false }));
+      }
+    },
+    [showError]
+  );
 
-  const loadSections = useCallback(async (departmentId, batchId) => {
-    if (!departmentId || !batchId) {
-      setSections([]);
-      return;
-    }
+  const loadSections = useCallback(
+    async (departmentId, batchId) => {
+      if (!departmentId || !batchId) {
+        setSections([]);
+        return;
+      }
 
-    try {
-      setLoading((prev) => ({ ...prev, sections: true }));
+      try {
+        setLoading((prev) => ({ ...prev, sections: true }));
 
-      const data = await getSections({
-        department: departmentId,
-        batch: batchId,
-      });
+        const data = await getSections({
+          department: departmentId,
+          batch: batchId,
+        });
 
-      setSections(normalizeList(data));
-    } catch (error) {
-      setSections([]);
-      setFeedback({
-        type: "error",
-        text:
-          error?.response?.data?.message ||
-          error.message ||
-          "Failed to load sections",
-      });
-    } finally {
-      setLoading((prev) => ({ ...prev, sections: false }));
-    }
-  }, []);
+        setSections(normalizeList(data));
+      } catch (error) {
+        setSections([]);
+        showError(error.message || "Failed to load sections");
+      } finally {
+        setLoading((prev) => ({ ...prev, sections: false }));
+      }
+    },
+    [showError]
+  );
 
   useEffect(() => {
     loadDepartments();
   }, [loadDepartments]);
+
+  const closeModal = () => {
+    setModal(initialModalState);
+    setFormState(initialFormState);
+  };
+
+  const goToOverview = () => {
+    setView("home");
+    setSelectedDepartment(null);
+    setSelectedBatch(null);
+    setBatches([]);
+    setSections([]);
+    closeModal();
+    clearError();
+  };
 
   const goToDepartments = useCallback(() => {
     setView("departments");
@@ -156,7 +157,8 @@ function useAcademicHierarchy() {
     setSelectedBatch(null);
     setBatches([]);
     setSections([]);
-  }, []);
+    clearError();
+  }, [clearError]);
 
   const handleDepartmentClick = useCallback(
     async (department) => {
@@ -181,6 +183,7 @@ function useAcademicHierarchy() {
   );
 
   const openCreateModal = (entity) => {
+    clearError();
     setFormState(initialFormState);
     setModal({
       open: true,
@@ -191,6 +194,7 @@ function useAcademicHierarchy() {
   };
 
   const openEditModal = (entity, item) => {
+    clearError();
     setFormState({
       departmentName: entity === "department" ? item?.name || "" : "",
       batchName: entity === "batch" ? item?.name || "" : "",
@@ -206,17 +210,13 @@ function useAcademicHierarchy() {
   };
 
   const openDeleteModal = (entity, item) => {
+    clearError();
     setModal({
       open: true,
       mode: "delete",
       entity,
       item,
     });
-  };
-
-  const closeModal = () => {
-    setModal(initialModalState);
-    setFormState(initialFormState);
   };
 
   const setFormValue = (entity, value) => {
@@ -241,136 +241,87 @@ function useAcademicHierarchy() {
   };
 
   const submitForm = async () => {
-  const currentValue = getCurrentFormValue().trim();
-  const departmentId = getId(selectedDepartment);
-  const batchId = getId(selectedBatch);
-  const itemId = getId(modal.item);
+    const currentValue = getCurrentFormValue().trim();
+    const departmentId = getId(selectedDepartment);
+    const batchId = getId(selectedBatch);
+    const itemId = getId(modal.item);
 
-  if (!currentValue) {
-    setFeedback({
-      type: "error",
-      text: "Name is required",
-    });
-    return;
-  }
-
-  try {
-    setLoading((prev) => ({ ...prev, submit: true }));
-    setFeedback({ type: "", text: "" });
-
-    if (modal.mode === "create") {
-      if (modal.entity === "department") {
-        await createDepartment({
-          name: currentValue,
-        });
-
-        await loadDepartments();
-
-        setFeedback({
-          type: "success",
-          text: "Department created successfully",
-        });
-      }
-
-      if (modal.entity === "batch") {
-        await createBatch({
-          name: currentValue,
-          department: departmentId,
-        });
-
-        await loadBatches(departmentId);
-
-        setFeedback({
-          type: "success",
-          text: "Batch created successfully",
-        });
-      }
-
-      if (modal.entity === "section") {
-        await createSection({
-          name: currentValue,
-          department: departmentId,
-          batch: batchId,
-        });
-
-        await loadSections(departmentId, batchId);
-
-        setFeedback({
-          type: "success",
-          text: "Section created successfully",
-        });
-      }
+    if (!currentValue) {
+      showError("Name is required");
+      return;
     }
 
-    if (modal.mode === "edit") {
-      if (modal.entity === "department") {
-        await updateDepartment(itemId, {
-          name: currentValue,
-        });
+    try {
+      setLoading((prev) => ({ ...prev, submit: true }));
+      clearError();
 
-        await loadDepartments();
+      if (modal.mode === "create") {
+        if (modal.entity === "department") {
+          await createDepartment({ name: currentValue });
+          await loadDepartments();
+        }
 
-        setSelectedDepartment((prev) =>
-          prev && getId(prev) === itemId
-            ? { ...prev, name: currentValue }
-            : prev
-        );
+        if (modal.entity === "batch") {
+          await createBatch({
+            name: currentValue,
+            department: departmentId,
+          });
+          await loadBatches(departmentId);
+        }
 
-        setFeedback({
-          type: "success",
-          text: "Department updated successfully",
-        });
+        if (modal.entity === "section") {
+          await createSection({
+            name: currentValue,
+            department: departmentId,
+            batch: batchId,
+          });
+          await loadSections(departmentId, batchId);
+        }
       }
 
-      if (modal.entity === "batch") {
-        await updateBatch(itemId, {
-          name: currentValue,
-          department: departmentId,
-        });
+      if (modal.mode === "edit") {
+        if (modal.entity === "department") {
+          await updateDepartment(itemId, { name: currentValue });
+          await loadDepartments();
 
-        await loadBatches(departmentId);
+          setSelectedDepartment((prev) =>
+            prev && getId(prev) === itemId
+              ? { ...prev, name: currentValue }
+              : prev
+          );
+        }
 
-        setSelectedBatch((prev) =>
-          prev && getId(prev) === itemId
-            ? { ...prev, name: currentValue }
-            : prev
-        );
+        if (modal.entity === "batch") {
+          await updateBatch(itemId, {
+            name: currentValue,
+            department: departmentId,
+          });
+          await loadBatches(departmentId);
 
-        setFeedback({
-          type: "success",
-          text: "Batch updated successfully",
-        });
+          setSelectedBatch((prev) =>
+            prev && getId(prev) === itemId
+              ? { ...prev, name: currentValue }
+              : prev
+          );
+        }
+
+        if (modal.entity === "section") {
+          await updateSection(itemId, {
+            name: currentValue,
+            department: departmentId,
+            batch: batchId,
+          });
+          await loadSections(departmentId, batchId);
+        }
       }
 
-      if (modal.entity === "section") {
-        await updateSection(itemId, {
-          name: currentValue,
-          department: departmentId,
-          batch: batchId,
-        });
-
-        await loadSections(departmentId, batchId);
-
-        setFeedback({
-          type: "success",
-          text: "Section updated successfully",
-        });
-      }
+      closeModal();
+    } catch (error) {
+      showError(error.message || "Failed to save changes");
+    } finally {
+      setLoading((prev) => ({ ...prev, submit: false }));
     }
-
-    closeModal();
-  } catch (error) {
-    setFeedback({
-      type: "error",
-      text:
-        error?.response?.data?.message ||
-        error.message ||
-        "Failed to save changes",
-    });
-  } finally {
-    setLoading((prev) => ({ ...prev, submit: false }));
-  }
-};
+  };
 
   const confirmDelete = async () => {
     const departmentId = getId(selectedDepartment);
@@ -379,7 +330,7 @@ function useAcademicHierarchy() {
 
     try {
       setLoading((prev) => ({ ...prev, submit: true }));
-      setFeedback({ type: "", text: "" });
+      clearError();
 
       if (modal.entity === "department") {
         await deleteDepartment(itemId);
@@ -392,11 +343,6 @@ function useAcademicHierarchy() {
           setSections([]);
           setView("departments");
         }
-
-        setFeedback({
-          type: "success",
-          text: "Department deleted successfully",
-        });
       }
 
       if (modal.entity === "batch") {
@@ -408,32 +354,16 @@ function useAcademicHierarchy() {
           setSections([]);
           setView("batches");
         }
-
-        setFeedback({
-          type: "success",
-          text: "Batch deleted successfully",
-        });
       }
 
       if (modal.entity === "section") {
         await deleteSection(itemId);
         await loadSections(departmentId, batchId);
-
-        setFeedback({
-          type: "success",
-          text: "Section deleted successfully",
-        });
       }
 
       closeModal();
     } catch (error) {
-      setFeedback({
-        type: "error",
-        text:
-          error?.response?.data?.message ||
-          error.message ||
-          "Failed to delete item",
-      });
+      showError(error.message || "Failed to delete item");
     } finally {
       setLoading((prev) => ({ ...prev, submit: false }));
     }
@@ -449,7 +379,6 @@ function useAcademicHierarchy() {
     loading,
     modal,
     formState,
-    feedback,
     openCreateModal,
     openEditModal,
     openDeleteModal,
@@ -457,6 +386,7 @@ function useAcademicHierarchy() {
     setFormValue,
     submitForm,
     confirmDelete,
+    goToOverview,
     goToDepartments,
     handleDepartmentClick,
     handleBatchClick,

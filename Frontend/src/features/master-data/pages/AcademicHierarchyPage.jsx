@@ -26,6 +26,7 @@ function AcademicHierarchyPage() {
     setFormValue,
     submitForm,
     confirmDelete,
+    goToOverview,
     goToDepartments,
     handleDepartmentClick,
     handleBatchClick,
@@ -34,9 +35,13 @@ function AcademicHierarchyPage() {
   const breadcrumbs = useMemo(() => {
     const items = [
       {
+        label: "Overview",
+        onClick: goToOverview
+      },
+      {
         label: "Departments",
         onClick: goToDepartments,
-      },
+      }
     ];
 
     if (selectedDepartment) {
@@ -54,7 +59,7 @@ function AcademicHierarchyPage() {
     }
 
     return items;
-  }, [selectedDepartment, selectedBatch, goToDepartments, handleDepartmentClick]);
+  }, [selectedDepartment, selectedBatch, goToOverview, goToDepartments, handleDepartmentClick, closeModal]);
 
   const getGridData = () => {
     if (view === "departments") {

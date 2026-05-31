@@ -1,65 +1,158 @@
-.error-notifier {
+.top-notification {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 9999;
-  width: min(380px, calc(100vw - 2rem));
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
-  background: #fff5f5;
-  border: 1px solid #fecaca;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(127, 29, 29, 0.1);
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  width: min(92vw, 480px);
+  animation: slideDown 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .notification-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1rem 1rem 0.95rem;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%);
+    border: 1px solid #e5e7eb;
+    box-shadow:
+      0 14px 30px rgba(15, 23, 42, 0.08),
+      0 2px 8px rgba(15, 23, 42, 0.04);
+    color: #1f2937;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.9),
+        rgba(255, 255, 255, 0)
+      );
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+      transform-origin: left;
+      animation: notifTimer 5s linear forwards;
+    }
+  }
+
+  .notification-icon {
+    flex-shrink: 0;
+    width: 2.35rem;
+    height: 2.35rem;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
+    border: 1px solid #fecdd3;
+    color: #dc2626;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  span {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #334155;
+    letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  .close-notif {
+    flex-shrink: 0;
+    width: 2.1rem;
+    height: 2.1rem;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #64748b;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+      color: #0f172a;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #cbd5e1;
+      outline-offset: 2px;
+    }
+  }
 }
 
-.error-notifier__left {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-  flex: 1;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
-.error-notifier__icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 999px;
-  background: #fee2e2;
-  color: #b91c1c;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.error-notifier__text {
-  margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.45;
-  color: #7f1d1d;
-}
-
-.error-notifier__close {
-  border: none;
-  background: transparent;
-  color: #b91c1c;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0.1rem 0.25rem;
-}
-
-.error-notifier__close:hover {
-  color: #991b1b;
+@keyframes notifTimer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 @media (max-width: 640px) {
-  .error-notifier {
-    left: 1rem;
-    right: 1rem;
-    width: auto;
+  .top-notification {
+    top: 1rem;
+    width: calc(100vw - 1.25rem);
+
+    .notification-inner {
+      padding: 0.9rem;
+      border-radius: 14px;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .notification-icon {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    span {
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .close-notif {
+      width: 2rem;
+      height: 2rem;
+    }
   }
 }
