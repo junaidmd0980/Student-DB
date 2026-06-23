@@ -275,7 +275,7 @@ function StudentTable({ filters }) {
   }
 
   if (!filteredStudents.length) {
-    return <p>No students found</p>;
+    return <div className="empty-state"> <p>No students found</p> </div>;
   }
 
   return (

@@ -6,7 +6,9 @@ import EntityFormModal from "../components/EntityFormModal.jsx";
 import DeleteConfirmModal from "../../../shared/components/DeleteConfirmModel.jsx";
 import EmptyState from "../components/EmptyState.jsx";
 import LoadingGrid from "../components/LoadingGrid.jsx";
-import useAcademicHierarchy from "../hooks/useAcademicHierarchy.js";
+import StudentList from "../components/StudentList.jsx";
+import StudentForm from "../../students/components/StudentForm.jsx";
+import useAcademicHierarchy from "../hooks/useAcademicHierarchy";
 
 function AcademicHierarchyPage() {
   const {
@@ -14,11 +16,16 @@ function AcademicHierarchyPage() {
     departments,
     batches,
     sections,
+    students,
     selectedDepartment,
     selectedBatch,
+    selectedSection,
     loading,
     modal,
     formState,
+    showStudentForm,
+    openStudentForm,
+    closeStudentForm,
     openCreateModal,
     openEditModal,
     openDeleteModal,
@@ -30,36 +37,47 @@ function AcademicHierarchyPage() {
     goToDepartments,
     handleDepartmentClick,
     handleBatchClick,
+    handleSectionClick,
+    refreshStudents,
   } = useAcademicHierarchy();
 
   const breadcrumbs = useMemo(() => {
     const items = [
-      {
-        label: "Overview",
-        onClick: goToOverview
-      },
-      {
-        label: "Departments",
-        onClick: goToDepartments,
-      }
+      { label: "Overview", onClick: goToOverview },
+      { label: "Departments", onClick: goToDepartments },
     ];
 
     if (selectedDepartment) {
       items.push({
         label: selectedDepartment.name,
-        onClick: () => handleDepartmentClick(selectedDepartment, { preserveView: true }),
+        onClick: () => handleDepartmentClick(selectedDepartment),
       });
     }
 
     if (selectedBatch) {
       items.push({
         label: selectedBatch.name,
+        onClick: () => handleBatchClick(selectedBatch),
+      });
+    }
+
+    if (selectedSection) {
+      items.push({
+        label: selectedSection.name,
         onClick: null,
       });
     }
 
     return items;
-  }, [selectedDepartment, selectedBatch, goToOverview, goToDepartments, handleDepartmentClick, closeModal]);
+  }, [
+    selectedDepartment,
+    selectedBatch,
+    selectedSection,
+    goToOverview,
+    goToDepartments,
+    handleDepartmentClick,
+    handleBatchClick,
+  ]);
 
   const getGridData = () => {
     if (view === "departments") {
@@ -78,9 +96,17 @@ function AcademicHierarchyPage() {
       };
     }
 
+    if (view === "sections") {
+      return {
+        entity: "section",
+        items: sections,
+        onCardClick: handleSectionClick,
+      };
+    }
+
     return {
-      entity: "section",
-      items: sections,
+      entity: "student",
+      items: [],
       onCardClick: null,
     };
   };
@@ -110,7 +136,7 @@ function AcademicHierarchyPage() {
           />
         )}
 
-        {view !== "home" && (
+        {view !== "home" && view !== "students" && (
           <>
             {loading[view] ? (
               <LoadingGrid />
@@ -141,6 +167,39 @@ function AcademicHierarchyPage() {
                 onEdit={openEditModal}
                 onDelete={openDeleteModal}
               />
+            )}
+          </>
+        )}
+
+        {view === "students" && (
+          <>
+            <StudentList
+              students={students}
+              selectedDepartment={selectedDepartment}
+              selectedBatch={selectedBatch}
+              selectedSection={selectedSection}
+              loading={loading}
+              goToOverview={goToOverview}
+              goToDepartments={goToDepartments}
+              onCreateStudent={openStudentForm}
+            />
+
+            {showStudentForm && (
+              <div className="modal-overlay" onClick={closeStudentForm}>
+                <div
+                  className="modal-card"
+                  onClick={(e) => e.stopPropagation()}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="create-student-title"
+                >
+                  <div className="modal-header">
+                    <h2 id="create-student-title">Create Student</h2>
+                  </div>
+
+                  <StudentForm onClose={closeStudentForm} onCreated={refreshStudents} />
+                </div>
+              </div>
             )}
           </>
         )}

@@ -33,9 +33,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/manage-data" replace />} />
-        <Route path="/manage-data" element={<AcademicHierarchyPage />} />
-        <Route path="/students/create" element={<StudentCreatePage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
         <Route path="/lab-sessions" element={<LabSessionsPage />} />
       </Route>

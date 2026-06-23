@@ -339,7 +339,7 @@ function LabSessionTable({ filters, refreshKey, onAttendanceViewChange }) {
   }
 
   if (!filteredSessions.length) {
-    return <p>No lab sessions found</p>;
+    return <div className="empty-state"> <p>No lab sessions found</p> </div>;
   }
 
   return (

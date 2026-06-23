@@ -12,6 +12,8 @@
 .filter-card,
 .table-card {
   margin-bottom: v.$spacing-lg;
+  display: flex;
+  gap: 10px;
 }
 
 @media (max-width: 768px) {

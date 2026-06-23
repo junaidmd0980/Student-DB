@@ -176,6 +176,8 @@ form .btn,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+  gap: 5px;
   min-height: 52px;
   padding: 0.875rem 1.75rem;
   border: none;

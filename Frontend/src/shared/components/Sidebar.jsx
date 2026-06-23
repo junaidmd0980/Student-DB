@@ -22,7 +22,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
 
       <nav className="sidebar__nav">
         <NavLink
-          to="/manage-data"
+          to="/dashboard"
           className={({ isActive }) =>
             isActive ? "sidebar__link sidebar__link--active" : "sidebar__link"
           }
@@ -31,7 +31,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
             <Database size={18} />
           </span>
           <span className={`sidebar__text ${isOpen ? "sidebar__text--show" : ""}`}>
-            Manage Data
+            Dashboard
           </span>
         </NavLink>
 
