@@ -120,7 +120,7 @@ function AcademicHierarchyPage() {
           <div>
             <h1 className="page-title">Academic Setup</h1>
             <p className="page-subtitle">
-              Manage departments, batches, and sections through contextual drill-down cards.
+              Manage departments, batches, sections and students.
             </p>
           </div>
 
@@ -197,7 +197,13 @@ function AcademicHierarchyPage() {
                     <h2 id="create-student-title">Create Student</h2>
                   </div>
 
-                  <StudentForm onClose={closeStudentForm} onCreated={refreshStudents} />
+                  <StudentForm 
+                    onClose={closeStudentForm} 
+                    onCreated={refreshStudents}
+                    selectedDepartment={selectedDepartment}
+                    selectedBatch={selectedBatch}
+                    selectedSection={selectedSection}
+                  />
                 </div>
               </div>
             )}

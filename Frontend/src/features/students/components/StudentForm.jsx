@@ -6,7 +6,7 @@ import { createStudent } from "../services/studentService.js";
 import CustomSelect from "../../../shared/components/CustomSelect.jsx";
 import { useError } from "../../../shared/context/ErrorContext.jsx";
 
-function StudentForm({ onClose, onCreated }) {
+function StudentForm({ onClose, onCreated, selectedDepartment, selectedBatch, selectedSection }) {
   const { showError, clearError } = useError();
 
   const [formData, setFormData] = useState({
@@ -14,9 +14,9 @@ function StudentForm({ onClose, onCreated }) {
     fullName: "",
     email: "",
     phone: "",
-    department: "",
-    batch: "",
-    section: "",
+    department: selectedDepartment?._id || selectedDepartment?.id || "",
+    batch: selectedBatch?._id || selectedBatch?.id || "",
+    section: selectedSection?._id || selectedSection?.id || "",
   });
 
   const [departments, setDepartments] = useState([]);
@@ -51,7 +51,6 @@ function StudentForm({ onClose, onCreated }) {
       if (!formData.department) {
         setBatches([]);
         setSections([]);
-        setFormData((prev) => ({ ...prev, batch: "", section: "" }));
         return;
       }
 
@@ -59,11 +58,9 @@ function StudentForm({ onClose, onCreated }) {
         const data = await getBatches({ department: formData.department });
         setBatches(Array.isArray(data) ? data : data.data || []);
         setSections([]);
-        setFormData((prev) => ({ ...prev, batch: "", section: "" }));
       } catch (error) {
         setBatches([]);
         setSections([]);
-        setFormData((prev) => ({ ...prev, batch: "", section: "" }));
         showError(getErrorMessage(error, "Failed to load batches"));
       }
     };
@@ -75,7 +72,6 @@ function StudentForm({ onClose, onCreated }) {
     const loadSections = async () => {
       if (!formData.batch) {
         setSections([]);
-        setFormData((prev) => ({ ...prev, section: "" }));
         return;
       }
 
@@ -85,10 +81,8 @@ function StudentForm({ onClose, onCreated }) {
           batch: formData.batch,
         });
         setSections(Array.isArray(data) ? data : data.data || []);
-        setFormData((prev) => ({ ...prev, section: "" }));
       } catch (error) {
         setSections([]);
-        setFormData((prev) => ({ ...prev, section: "" }));
         showError(getErrorMessage(error, "Failed to load sections"));
       }
     };
@@ -191,7 +185,7 @@ function StudentForm({ onClose, onCreated }) {
         />
       </div>
 
-      <div className="form-group">
+      {/* <div className="form-group">
         <label htmlFor="department">Department</label>
         <CustomSelect
           name="department"
@@ -230,7 +224,7 @@ function StudentForm({ onClose, onCreated }) {
           }))}
           disabled={!formData.batch}
         />
-      </div>
+      </div> */}
 
       <div className="delete-actions">
         <button type="submit" className="table-action" disabled={loading}>
