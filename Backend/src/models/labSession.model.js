@@ -56,7 +56,7 @@ const labSessionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-labSessionSchema.index({ department: 1, batch: 1, section: 1, data: 1 });
+labSessionSchema.index({ department: 1, batch: 1, section: 1, date: 1 });
 
 
 export default mongoose.model("LabSession", labSessionSchema);

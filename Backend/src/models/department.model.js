@@ -7,6 +7,6 @@ const departmentSchema = new mongoose.Schema({
         unique: true,
         trim: true
     }
-}, { timeserie: true });
+}, { timestamps: true });
 
 export default mongoose.model("Department", departmentSchema);
