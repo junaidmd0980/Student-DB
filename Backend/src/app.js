@@ -10,7 +10,7 @@ import labSessionRouter from "./routes/labSession.route.js";
 const app = express()
 
 app.use(cors({
-  origin: process.env.VITE_API_FRONTEND_URL, 
+  origin: [process.env.VITE_API_FRONTEND_URL, process.env.VITE_API_CUSTOM_DOMAIN], 
   credentials: false
 }));
 
