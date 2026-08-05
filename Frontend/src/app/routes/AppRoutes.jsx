@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, Outlet, createRoutesFromElements, createBrowserRouter } from "react-router-dom";
+import { Navigate, Route, Routes, Outlet } from "react-router-dom";
 import { useState } from "react";
 // import StudentDbLanding from "../../features/master-data/pages/StudentDBLanding.jsx";
 import AcademicHierarchyPage from "../../features/master-data/pages/AcademicHierarchyPage.jsx";
@@ -9,7 +9,7 @@ import NotFoundPage from "../../shared/components/NotFoundPage.jsx";
 import Navbar from "../../shared/components/Navbar.jsx";
 import Sidebar from "../../shared/components/Sidebar.jsx";
 
-export function AppLayout() {
+function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -31,10 +31,10 @@ export function AppLayout() {
 }
 
 function AppRoutes() {
-  const routes =  createRoutesFromElements(
-    <>
+  return (
+    <Routes>
       {/* <Route path="/" element={<StudentDbLanding />} /> */}
-      <Route  element={<AppLayout />}>
+      <Route element={<AppLayout />}>
         
         <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
@@ -43,12 +43,8 @@ function AppRoutes() {
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
-    </>
+    </Routes>
   );
-
-  const router = createBrowserRouter(routes);
-  return router
 }
-
 
 export default AppRoutes;
