@@ -34,13 +34,13 @@ function AppRoutes() {
   return (
     <Routes>
       {/* <Route path="/" element={<StudentDbLanding />} /> */}
-      <Route path="/" element={<AppLayout />}>
+      {/* <Route path="/" element={<AppLayout />}> */}
         
         <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
         <Route path="/lab-sessions" element={<LabSessionsPage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Route>
+      {/* </Route> */}
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
