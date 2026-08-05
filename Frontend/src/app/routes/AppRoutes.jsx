@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, Outlet } from "react-router-dom";
 import { useState } from "react";
-import StudentDbLanding from "../../features/master-data/pages/StudentDBLanding.jsx";
+// import StudentDbLanding from "../../features/master-data/pages/StudentDBLanding.jsx";
 import AcademicHierarchyPage from "../../features/master-data/pages/AcademicHierarchyPage.jsx";
 import StudentCreatePage from "../../features/students/pages/StudentCreatePage.jsx";
 import StudentListPage from "../../features/students/pages/StudentListPage.jsx";
