@@ -34,7 +34,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* <Route path="/" element={<StudentDbLanding />} /> */}
-      <Route element={<AppLayout />}>
+      <Route path="/" element={<AppLayout />}>
         
         <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
