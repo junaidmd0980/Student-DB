@@ -12,7 +12,7 @@ import { register } from "./controllers/auth.controller.js";
 const app = express()
 
 app.use(cors({
-  origin: [process.env.VITE_API_FRONTEND_URL, process.env.VITE_API_CUSTOM_DOMAIN, "localhost:5173"], 
+  origin: [process.env.VITE_API_FRONTEND_URL, process.env.VITE_API_CUSTOM_DOMAIN, "http://localhost:5173"], 
   credentials: false
 }));
 
