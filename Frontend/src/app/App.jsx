@@ -1,5 +1,5 @@
 import { BrowserRouter, RouterProvider } from "react-router-dom";
-import AppRoutes from "./routes/AppRoutes";
+import AppRoutes, { AppLayout } from "./routes/AppRoutes";
 import "../styles/main.scss";
 import Notification from "../shared/components/Notification";
 import { ErrorProvider } from "../shared/context/ErrorContext";
@@ -7,10 +7,8 @@ import { ErrorProvider } from "../shared/context/ErrorContext";
 function App() {
   return (
     <ErrorProvider>
-      <RouterProvider router={AppRoutes}>
-
-        <Notification />
-      </RouterProvider>
+      <Notification />
+      <RouterProvider router={AppRoutes()}/>
     </ErrorProvider>
   );
 }

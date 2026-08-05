@@ -9,7 +9,7 @@ import NotFoundPage from "../../shared/components/NotFoundPage.jsx";
 import Navbar from "../../shared/components/Navbar.jsx";
 import Sidebar from "../../shared/components/Sidebar.jsx";
 
-function AppLayout() {
+export function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -32,24 +32,23 @@ function AppLayout() {
 
 function AppRoutes() {
   const routes =  createRoutesFromElements(
-    <Routes>
+    <>
       {/* <Route path="/" element={<StudentDbLanding />} /> */}
-      {/* <Route path="/" element={<AppLayout />}> */}
+      <Route  element={<AppLayout />}>
         
         <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
         <Route path="/lab-sessions" element={<LabSessionsPage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      {/* </Route> */}
+      </Route>
 
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    </>
   );
 
   const router = createBrowserRouter(routes);
   return router
 }
-
 
 
 export default AppRoutes;
