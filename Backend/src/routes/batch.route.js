@@ -1,8 +1,8 @@
-import express from "express";
+import { Router } from "express";
 import { createBatch, getBatches, updateBatch, deleteBatch } from "../controllers/batch.controller.js";
 
 
-const router = express.Router()
+const router = Router()
 
 router.post("/", createBatch);
 router.get("/", getBatches);
