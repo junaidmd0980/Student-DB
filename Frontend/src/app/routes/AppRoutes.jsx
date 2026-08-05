@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, Outlet } from "react-router-dom";
 import { useState } from "react";
+import StudentDbLanding from "../../features/master-data/pages/StudentDBLanding.jsx";
 import AcademicHierarchyPage from "../../features/master-data/pages/AcademicHierarchyPage.jsx";
 import StudentCreatePage from "../../features/students/pages/StudentCreatePage.jsx";
 import StudentListPage from "../../features/students/pages/StudentListPage.jsx";
@@ -32,11 +33,13 @@ function AppLayout() {
 function AppRoutes() {
   return (
     <Routes>
+      {/* <Route path="/" element={<StudentDbLanding />} /> */}
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
         <Route path="/dashboard" element={<AcademicHierarchyPage />} />
         <Route path="/students/list" element={<StudentListPage />} />
         <Route path="/lab-sessions" element={<LabSessionsPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
