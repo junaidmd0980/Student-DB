@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, Outlet } from "react-router-dom";
+import { Navigate, Route, Routes, Outlet, createRoutesFromElements, createBrowserRouter } from "react-router-dom";
 import { useState } from "react";
 // import StudentDbLanding from "../../features/master-data/pages/StudentDBLanding.jsx";
 import AcademicHierarchyPage from "../../features/master-data/pages/AcademicHierarchyPage.jsx";
@@ -31,7 +31,7 @@ function AppLayout() {
 }
 
 function AppRoutes() {
-  return (
+  const routes =  createRoutesFromElements(
     <Routes>
       {/* <Route path="/" element={<StudentDbLanding />} /> */}
       {/* <Route path="/" element={<AppLayout />}> */}
@@ -45,6 +45,11 @@ function AppRoutes() {
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
+
+  const router = createBrowserRouter(routes);
+  return router
 }
+
+
 
 export default AppRoutes;
