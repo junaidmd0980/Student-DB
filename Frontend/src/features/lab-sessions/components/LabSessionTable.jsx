@@ -1,4 +1,4 @@
-import { lazy, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2, Eye, ArrowLeft } from "lucide-react";
 import {
   getLabSessions,

@@ -13,6 +13,11 @@
 @use "./components/filter";
 @use "./components/customselect";
 @use "./components/Loader";
+@use "./components/profile-badge";
 @use "./components/labSession";
 @use "./pages/master-data";
 @use "./pages/students";
+@use "./pages/tenants";
+@use "./pages/studentdb-landing";
+@use "./pages/auth";
+@use "./pages/account";

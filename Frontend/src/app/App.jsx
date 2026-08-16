@@ -1,18 +1,18 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import "../styles/main.scss";
-import Notification from "../shared/components/Notification";
-import { ErrorProvider } from "../shared/context/ErrorContext";
+import { AuthProvider } from "../Auth/context/AuthContext.jsx";
+
 
 function App() {
   return (
-    <ErrorProvider>
-      <BrowserRouter>
-        <Notification />
+    <BrowserRouter>
+      <AuthProvider>
         <AppRoutes />
-      </BrowserRouter>
-    </ErrorProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
+
 
 export default App;

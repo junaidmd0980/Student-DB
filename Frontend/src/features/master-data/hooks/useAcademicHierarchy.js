@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTenant } from "../../tenants/context/TenantContext.jsx";
 import {
   createDepartment,
   deleteDepartment,
@@ -35,6 +36,8 @@ const initialFormState = {
 
 function useAcademicHierarchy() {
   const { showError, clearError } = useError();
+  const { currentTenant } = useTenant();
+  const tenantId = currentTenant?._id?.toString() || currentTenant?.id || null;
 
   const [view, setView] = useState("home");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -67,7 +70,12 @@ function useAcademicHierarchy() {
 
   const getId = (item) => item?._id || item?.id || null;
 
-  const loadDepartments = useCallback(async () => {
+  const loadDepartments = useCallback(async (tenantId) => {
+    if (!tenantId) {
+      setDepartments([]);
+      return;
+    }
+
     try {
       setLoading((prev) => ({
         ...prev,
@@ -75,7 +83,7 @@ function useAcademicHierarchy() {
         departments: true,
       }));
 
-      const data = await getDepartments();
+      const data = await getDepartments(tenantId);
       setDepartments(normalizeList(data));
     } catch (error) {
       setDepartments([]);
@@ -90,15 +98,15 @@ function useAcademicHierarchy() {
   }, [showError]);
 
   const loadBatches = useCallback(
-    async (departmentId) => {
-      if (!departmentId) {
+    async (tenantId, departmentId) => {
+      if (!tenantId || !departmentId) {
         setBatches([]);
         return;
       }
 
       try {
         setLoading((prev) => ({ ...prev, batches: true }));
-        const data = await getBatches({ department: departmentId });
+        const data = await getBatches(tenantId, { department: departmentId });
         setBatches(normalizeList(data));
       } catch (error) {
         setBatches([]);
@@ -111,15 +119,15 @@ function useAcademicHierarchy() {
   );
 
   const loadSections = useCallback(
-    async (departmentId, batchId) => {
-      if (!departmentId || !batchId) {
+    async (tenantId, departmentId, batchId) => {
+      if (!tenantId || !departmentId || !batchId) {
         setSections([]);
         return;
       }
 
       try {
         setLoading((prev) => ({ ...prev, sections: true }));
-        const data = await getSections({
+        const data = await getSections(tenantId, {
           department: departmentId,
           batch: batchId,
         });
@@ -135,15 +143,15 @@ function useAcademicHierarchy() {
   );
 
   const loadStudents = useCallback(
-    async (departmentId, batchId, sectionId) => {
-      if (!departmentId || !batchId) {
+    async (tenantId, departmentId, batchId, sectionId) => {
+      if (!tenantId || !departmentId || !batchId) {
         setStudents([]);
         return;
       }
 
       try {
         setLoading((prev) => ({ ...prev, students: true }));
-        const data = await getStudents({
+        const data = await getStudents(tenantId, {
           department: departmentId,
           batch: batchId,
           section: sectionId || undefined,
@@ -160,13 +168,18 @@ function useAcademicHierarchy() {
   );
 
   useEffect(() => {
-    loadDepartments();
-  }, [loadDepartments]);
+    if (!tenantId) {
+      setDepartments([]);
+      return;
+    }
 
-  const closeModal = () => {
+    loadDepartments(tenantId);
+  }, [tenantId, loadDepartments]);
+
+  const closeModal = useCallback(() => {
     setModal(initialModalState);
     setFormState(initialFormState);
-  };
+  }, []);
 
   const goToOverview = () => {
     setView("home");
@@ -202,7 +215,7 @@ function useAcademicHierarchy() {
       setStudents([]);
       setShowStudentForm(false);
       setView("batches");
-      await loadBatches(getId(department));
+      await loadBatches(tenantId, getId(department));
     },
     [loadBatches]
   );
@@ -216,7 +229,7 @@ function useAcademicHierarchy() {
       setStudents([]);
       setShowStudentForm(false);
       setView("sections");
-      await loadSections(departmentId, getId(batch));
+      await loadSections(tenantId, departmentId, getId(batch));
     },
     [loadSections, selectedDepartment]
   );
@@ -229,7 +242,7 @@ function useAcademicHierarchy() {
       setSelectedSection(section);
       setShowStudentForm(false);
       setView("students");
-      await loadStudents(departmentId, batchId, getId(section));
+      await loadStudents(tenantId, departmentId, batchId, getId(section));
     },
     [loadStudents, selectedDepartment, selectedBatch]
   );
@@ -300,56 +313,70 @@ function useAcademicHierarchy() {
       clearError();
 
       if (modal.mode === "create") {
-        if (modal.entity === "department") {
-          await createDepartment({ name: currentValue });
-          await loadDepartments();
+          if (modal.entity === "department") {
+          await createDepartment({ name: currentValue }, tenantId);
+          await loadDepartments(tenantId);
         }
 
         if (modal.entity === "batch") {
-          await createBatch({
-            name: currentValue,
-            department: departmentId,
-          });
-          await loadBatches(departmentId);
+          await createBatch(
+            {
+              name: currentValue,
+              department: departmentId,
+            },
+            tenantId
+          );
+          await loadBatches(tenantId, departmentId);
         }
 
         if (modal.entity === "section") {
-          await createSection({
-            name: currentValue,
-            department: departmentId,
-            batch: batchId,
-          });
-          await loadSections(departmentId, batchId);
+          await createSection(
+            {
+              name: currentValue,
+              department: departmentId,
+              batch: batchId,
+            },
+            tenantId
+          );
+          await loadSections(tenantId, departmentId, batchId);
         }
       }
 
       if (modal.mode === "edit") {
         if (modal.entity === "department") {
-          await updateDepartment(itemId, { name: currentValue });
-          await loadDepartments();
+          await updateDepartment(itemId, { name: currentValue }, tenantId);
+          await loadDepartments(tenantId);
           setSelectedDepartment((prev) =>
             prev && getId(prev) === itemId ? { ...prev, name: currentValue } : prev
           );
         }
 
         if (modal.entity === "batch") {
-          await updateBatch(itemId, {
-            name: currentValue,
-            department: departmentId,
-          });
-          await loadBatches(departmentId);
+          await updateBatch(
+            itemId,
+            {
+              name: currentValue,
+              department: departmentId,
+            },
+            tenantId
+          );
+          await loadBatches(tenantId, departmentId);
           setSelectedBatch((prev) =>
             prev && getId(prev) === itemId ? { ...prev, name: currentValue } : prev
           );
         }
 
         if (modal.entity === "section") {
-          await updateSection(itemId, {
-            name: currentValue,
-            department: departmentId,
-            batch: batchId,
-          });
-          await loadSections(departmentId, batchId);
+          await updateSection(
+            itemId,
+            {
+              name: currentValue,
+              department: departmentId,
+              batch: batchId,
+            },
+            tenantId
+          );
+          await loadSections(tenantId, departmentId, batchId);
         }
       }
 
@@ -371,8 +398,8 @@ function useAcademicHierarchy() {
       clearError();
 
       if (modal.entity === "department") {
-        await deleteDepartment(itemId);
-        await loadDepartments();
+        await deleteDepartment(itemId, tenantId);
+        await loadDepartments(tenantId);
 
         if (departmentId === itemId) {
           setSelectedDepartment(null);
@@ -386,8 +413,8 @@ function useAcademicHierarchy() {
       }
 
       if (modal.entity === "batch") {
-        await deleteBatch(itemId);
-        await loadBatches(departmentId);
+        await deleteBatch(itemId, tenantId);
+        await loadBatches(tenantId, departmentId);
 
         if (batchId === itemId) {
           setSelectedBatch(null);
@@ -399,8 +426,8 @@ function useAcademicHierarchy() {
       }
 
       if (modal.entity === "section") {
-        await deleteSection(itemId);
-        await loadSections(departmentId, batchId);
+        await deleteSection(itemId, tenantId);
+        await loadSections(tenantId, departmentId, batchId);
 
         if (getId(selectedSection) === itemId) {
           setSelectedSection(null);
@@ -422,18 +449,21 @@ function useAcademicHierarchy() {
     const batchId = getId(selectedBatch);
     const sectionId = getId(selectedSection);
 
-    if (!departmentId || !batchId) {
+    if (!tenantId || !departmentId || !batchId) {
       setStudents([]);
       return;
     }
 
     try {
       setLoading((prev) => ({ ...prev, students: true }));
-      const data = await getStudents({
-        department: departmentId,
-        batch: batchId,
-        section: sectionId || undefined,
-      });
+      const data = await getStudents(
+        {
+          department: departmentId,
+          batch: batchId,
+          section: sectionId || undefined,
+        },
+        tenantId
+      );
       setStudents(normalizeList(data));
     } catch (error) {
       setStudents([]);

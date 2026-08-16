@@ -6,6 +6,7 @@ import Section from "../models/section.model.js";
 export const createBatch = async (req, res) => {
   try {
     const { name, department } = req.body;
+    const tenant = req.tenant;
 
     if (!name || !department) {
       return res.status(400).json({
@@ -21,17 +22,25 @@ export const createBatch = async (req, res) => {
       });
     }
 
-    const departmentExists = await Department.findById(department);
-    if (!departmentExists) {
+    const departmentDoc = await Department.findOne({
+      _id: department,
+      tenant: tenant._id
+    });
+
+    if (!departmentDoc) {
       return res.status(404).json({
         success: false,
-        message: "Department not found"
+        message: "Department not found in this organization"
       });
     }
 
+    const trimmedName = name.trim();
+
     const existingBatch = await Batch.findOne({
-      name: name.trim(),
-      department
+      tenant: tenant._id,
+      name: trimmedName,
+      department,
+      _id: { $ne: undefined } 
     });
 
     if (existingBatch) {
@@ -42,7 +51,8 @@ export const createBatch = async (req, res) => {
     }
 
     const batch = await Batch.create({
-      name: name.trim(),
+      tenant: tenant._id,
+      name: trimmedName,
       department
     });
 
@@ -62,14 +72,15 @@ export const createBatch = async (req, res) => {
 export const getBatches = async (req, res) => {
   try {
     const { department, status } = req.query;
+    const tenant = req.tenant;
 
-    const matchStage = {};
+    const matchStage = { tenant: tenant._id };
 
     if (department) {
       if (!mongoose.Types.ObjectId.isValid(department)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid department id",
+          message: "Invalid department id"
         });
       }
       matchStage.department = new mongoose.Types.ObjectId(department);
@@ -80,53 +91,65 @@ export const getBatches = async (req, res) => {
     }
 
     const batches = await Batch.aggregate([
-      {
-        $match: matchStage,
-      },
+      { $match: matchStage },
       {
         $lookup: {
           from: "departments",
-          localField: "department",
-          foreignField: "_id",
-          as: "department",
-        },
+          let: { deptId: "$department" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$_id", "$$deptId"] },
+                    { $eq: ["$tenant", tenant._id] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "department"
+        }
       },
-      {
-        $unwind: "$department",
-      },
+      { $unwind: "$department" },
       {
         $lookup: {
           from: "sections",
-          localField: "_id",
-          foreignField: "batch",
-          as: "sections",
-        },
+          let: { batchId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$tenant", tenant._id] },
+                    { $eq: ["$batch", "$$batchId"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "sections"
+        }
       },
-      {
-        $addFields: {
-          sectionCount: { $size: "$sections" },
-        },
-      },
+      { $addFields: { sectionCount: { $size: "$sections" } } },
       {
         $project: {
           sections: 0,
-          "department.__v": 0,
-        },
+          "department.__v": 0
+        }
       },
-      {
-        $sort: { name: 1 },
-      },
+      { $sort: { name: 1 } }
     ]);
 
     return res.status(200).json({
       success: true,
       count: batches.length,
-      data: batches,
+      data: batches
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -135,6 +158,7 @@ export const updateBatch = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, department } = req.body;
+    const tenant = req.tenant;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -157,17 +181,22 @@ export const updateBatch = async (req, res) => {
       });
     }
 
-    const departmentExists = await Department.findById(department);
-    if (!departmentExists) {
+    const departmentDoc = await Department.findOne({
+      _id: department,
+      tenant: tenant._id
+    });
+
+    if (!departmentDoc) {
       return res.status(404).json({
         success: false,
-        message: "Department not found"
+        message: "Department not found in this organization"
       });
     }
 
     const trimmedName = name.trim();
 
     const existingBatch = await Batch.findOne({
+      tenant: tenant._id,
       name: trimmedName,
       department,
       _id: { $ne: id }
@@ -180,8 +209,11 @@ export const updateBatch = async (req, res) => {
       });
     }
 
-    const updatedBatch = await Batch.findByIdAndUpdate(
-      id,
+    const updatedBatch = await Batch.findOneAndUpdate(
+      {
+        _id: id,
+        tenant: tenant._id
+      },
       {
         name: trimmedName,
         department
@@ -215,6 +247,7 @@ export const updateBatch = async (req, res) => {
 export const deleteBatch = async (req, res) => {
   try {
     const { id } = req.params;
+    const tenant = req.tenant;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -223,7 +256,10 @@ export const deleteBatch = async (req, res) => {
       });
     }
 
-    const existingBatch = await Batch.findById(id);
+    const existingBatch = await Batch.findOne({
+      _id: id,
+      tenant: tenant._id
+    });
 
     if (!existingBatch) {
       return res.status(404).json({
@@ -232,7 +268,11 @@ export const deleteBatch = async (req, res) => {
       });
     }
 
-    const deletedSectionsResult = await Section.deleteMany({ batch: id });
+    const deletedSectionsResult = await Section.deleteMany({
+      tenant: tenant._id,
+      batch: id
+    });
+
     const deletedBatch = await Batch.findByIdAndDelete(id);
 
     return res.status(200).json({

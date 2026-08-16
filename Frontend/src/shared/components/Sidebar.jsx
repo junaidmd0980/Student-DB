@@ -36,20 +36,6 @@ function Sidebar({ isOpen, toggleSidebar }) {
         </NavLink>
 
         <NavLink
-          to="/students/create"
-          className={({ isActive }) =>
-            isActive ? "sidebar__link sidebar__link--active" : "sidebar__link"
-          }
-        >
-          <span className="sidebar__icon">
-            <UserPlus size={18} />
-          </span>
-          <span className={`sidebar__text ${isOpen ? "sidebar__text--show" : ""}`}>
-            Create Student
-          </span>
-        </NavLink>
-
-        <NavLink
           to="/students/list"
           className={({ isActive }) =>
             isActive ? "sidebar__link sidebar__link--active" : "sidebar__link"

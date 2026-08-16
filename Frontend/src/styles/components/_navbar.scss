@@ -12,6 +12,13 @@
     min-width: 0;
   }
 
+  &__right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
   &__brand {
     display: flex;
     align-items: center;

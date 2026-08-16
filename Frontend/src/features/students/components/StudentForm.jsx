@@ -12,6 +12,7 @@ function StudentForm({ onClose, onCreated, selectedDepartment, selectedBatch, se
   const [formData, setFormData] = useState({
     rollNo: "",
     fullName: "",
+    gender: "",
     email: "",
     phone: "",
     department: selectedDepartment?._id || selectedDepartment?.id || "",
@@ -116,6 +117,7 @@ function StudentForm({ onClose, onCreated, selectedDepartment, selectedBatch, se
       await createStudent({
         rollNo: formData.rollNo.trim(),
         fullName: formData.fullName.trim(),
+        gender: formData.gender,
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         department: formData.department,
@@ -158,6 +160,16 @@ function StudentForm({ onClose, onCreated, selectedDepartment, selectedBatch, se
           value={formData.rollNo}
           onChange={handleChange}
           placeholder="Enter roll number"
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="gender">Gender</label>
+        <CustomSelect
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          options={['Male', 'Female', 'Other'].map((gender) => ({ label: gender, value: gender }))}
         />
       </div>
 

@@ -25,6 +25,29 @@
   }
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.section-subtitle {
+  margin: 0.25rem 0 0;
+  color: #667085;
+  max-width: 720px;
+  line-height: 1.6;
+}
+
 .hierarchy-breadcrumbs {
   &__list {
     display: flex;
@@ -527,4 +550,168 @@
   .primary-btn {
     width: 100%;
   }
+}
+
+/* Dashboard home grid and tenant overview */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.25rem;
+  align-items: start;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tenant-overview-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  .tenant-embed {
+    margin-top: 0.5rem;
+  }
+
+  .empty-state {
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px dashed #e6e9ee;
+    background: #fff8f5;
+    text-align: center;
+
+    &__title {
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #1f2937;
+    }
+
+    &__text {
+      color: #586069;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+/* Manage roles grid */
+.manage-roles-grid {
+  .card {
+    padding: 1.25rem 1.5rem;
+    min-height: 220px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .tenant-meta {
+      color: #475569;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+  }
+
+  .access-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .access-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(248, 250, 252, 0.9);
+    border: 1px solid #eef2f6;
+
+    @media (min-width: 880px) {
+      padding: 1rem 1.25rem;
+    }
+
+    .access-info {
+      display: flex;
+      flex-direction: column;
+
+      .access-name {
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .access-email {
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+    }
+
+    .access-role {
+      color: #0f172a;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+  }
+}
+
+.access-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 880px) {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  }
+
+  margin-bottom: 1.25rem;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 1rem;
+
+  @media (max-width: 980px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-card-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.home-action {
+  display: block;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #e6eef6;
+  background: #fff;
+  cursor: pointer;
+  width: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  }
+}
+
+.home-card {
+  .card { padding: 0; border: none; box-shadow: none; }
 }

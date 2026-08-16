@@ -2,19 +2,19 @@ import mongoose from "mongoose";
 import LabSession from "../models/labSession.model.js";
 import LabAttendance from "../models/labAttendance.model.js";
 import Student from "../models/student.model.js";
+import Department from "../models/department.model.js";
+import Batch from "../models/batch.model.js";
+import Section from "../models/section.model.js";
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const populateSessionRefs = [
-  { path: "department", select: "name code" },
-  { path: "batch", select: "name year startYear endYear" },
-  { path: "section", select: "name code" },
-  { path: "createdBy", select: "fullName email" }
+  { path: "department", select: "name" },
+  { path: "batch", select: "name" },
+  { path: "section", select: "name" },
+  { path: "createdBy", select: "username email" }
 ];
 
-// @desc Create lab session
-// @route POST /api/lab-sessions
-// @access Private
 export const createLabSession = async (req, res) => {
   try {
     const {
@@ -27,6 +27,8 @@ export const createLabSession = async (req, res) => {
       section,
       notes
     } = req.body;
+
+    const tenant = req.tenant;
 
     if (
       !sessionName ||
@@ -54,7 +56,33 @@ export const createLabSession = async (req, res) => {
       });
     }
 
+    const [deptDoc, batchDoc, sectionDoc] = await Promise.all([
+      Department.findOne({ _id: department, tenant: tenant._id }),
+      Batch.findOne({ _id: batch, tenant: tenant._id, department }),
+      Section.findOne({ _id: section, tenant: tenant._id, batch })
+    ]);
+
+    if (!deptDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Department not found in this tenant"
+      });
+    }
+    if (!batchDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Batch not found for this department in this tenant"
+      });
+    }
+    if (!sectionDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Section not found for this batch in this tenant"
+      });
+    }
+
     const session = await LabSession.create({
+      tenant: tenant._id,
       sessionName: sessionName.trim(),
       date: date.trim(),
       startTime: startTime.trim(),
@@ -82,14 +110,12 @@ export const createLabSession = async (req, res) => {
   }
 };
 
-// @desc Get all lab sessions
-// @route GET /api/lab-sessions
-// @access Private
 export const getLabSessions = async (req, res) => {
   try {
     const { department, batch, section, date, status } = req.query;
+    const tenant = req.tenant;
 
-    const filter = {};
+    const filter = { tenant: tenant._id };
 
     if (department && isValidObjectId(department)) filter.department = department;
     if (batch && isValidObjectId(batch)) filter.batch = batch;
@@ -115,12 +141,10 @@ export const getLabSessions = async (req, res) => {
   }
 };
 
-// @desc Get single lab session with eligible students and attendance
-// @route GET /api/lab-sessions/:sessionId
-// @access Private
 export const getLabSessionById = async (req, res) => {
   try {
     const { sessionId } = req.params;
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId)) {
       return res.status(400).json({
@@ -129,7 +153,10 @@ export const getLabSessionById = async (req, res) => {
       });
     }
 
-    const session = await LabSession.findById(sessionId).populate(populateSessionRefs);
+    const session = await LabSession.findOne({
+      _id: sessionId,
+      tenant: tenant._id
+    }).populate(populateSessionRefs);
 
     if (!session) {
       return res.status(404).json({
@@ -139,6 +166,7 @@ export const getLabSessionById = async (req, res) => {
     }
 
     const eligibleStudents = await Student.find({
+      tenant: tenant._id,
       department: session.department._id,
       batch: session.batch._id,
       section: session.section._id,
@@ -147,14 +175,17 @@ export const getLabSessionById = async (req, res) => {
       .select("_id rollNo fullName department batch section status")
       .sort({ rollNo: 1 });
 
-    const attendance = await LabAttendance.find({ session: session._id })
+    const attendance = await LabAttendance.find({
+      tenant: tenant._id,
+      session: session._id
+    })
       .populate({
         path: "student",
         select: "_id rollNo fullName"
       })
       .populate({
         path: "markedBy",
-        select: "fullName email"
+        select: "username email"
       })
       .sort({ markedAt: 1 });
 
@@ -190,9 +221,6 @@ export const getLabSessionById = async (req, res) => {
   }
 };
 
-// @desc Update full lab session
-// @route PUT /api/lab-sessions/:sessionId
-// @access Private
 export const updateLabSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -207,6 +235,8 @@ export const updateLabSession = async (req, res) => {
       status,
       notes
     } = req.body;
+
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId)) {
       return res.status(400).json({
@@ -230,24 +260,10 @@ export const updateLabSession = async (req, res) => {
       });
     }
 
-    if (!isValidObjectId(department)) {
+    if (!isValidObjectId(department) || !isValidObjectId(batch) || !isValidObjectId(section)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid department id"
-      });
-    }
-
-    if (!isValidObjectId(batch)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid batch id"
-      });
-    }
-
-    if (!isValidObjectId(section)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid section id"
+        message: "Invalid department, batch, or section id"
       });
     }
 
@@ -258,7 +274,23 @@ export const updateLabSession = async (req, res) => {
       });
     }
 
-    const existingSession = await LabSession.findById(sessionId);
+    const [deptDoc, batchDoc, sectionDoc] = await Promise.all([
+      Department.findOne({ _id: department, tenant: tenant._id }),
+      Batch.findOne({ _id: batch, tenant: tenant._id, department }),
+      Section.findOne({ _id: section, tenant: tenant._id, batch })
+    ]);
+
+    if (!deptDoc || !batchDoc || !sectionDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid department/batch/section for this tenant"
+      });
+    }
+
+    const existingSession = await LabSession.findOne({
+      _id: sessionId,
+      tenant: tenant._id
+    });
 
     if (!existingSession) {
       return res.status(404).json({
@@ -267,8 +299,11 @@ export const updateLabSession = async (req, res) => {
       });
     }
 
-    const updatedSession = await LabSession.findByIdAndUpdate(
-      sessionId,
+    const updatedSession = await LabSession.findOneAndUpdate(
+      {
+        _id: sessionId,
+        tenant: tenant._id
+      },
       {
         sessionName: sessionName.trim(),
         date: date.trim(),
@@ -300,12 +335,10 @@ export const updateLabSession = async (req, res) => {
   }
 };
 
-// @desc Delete lab session and its attendance
-// @route DELETE /api/lab-sessions/:sessionId
-// @access Private
 export const deleteLabSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId)) {
       return res.status(400).json({
@@ -314,7 +347,10 @@ export const deleteLabSession = async (req, res) => {
       });
     }
 
-    const session = await LabSession.findById(sessionId);
+    const session = await LabSession.findOne({
+      _id: sessionId,
+      tenant: tenant._id
+    });
 
     if (!session) {
       return res.status(404).json({
@@ -324,6 +360,7 @@ export const deleteLabSession = async (req, res) => {
     }
 
     const attendanceDeleteResult = await LabAttendance.deleteMany({
+      tenant: tenant._id,
       session: session._id
     });
 
@@ -346,13 +383,11 @@ export const deleteLabSession = async (req, res) => {
   }
 };
 
-// @desc Mark attendance by rollNo or studentId
-// @route POST /api/lab-sessions/:sessionId/attendance
-// @access Private
 export const markLabAttendance = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { rollNo, studentId, method } = req.body;
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId)) {
       return res.status(400).json({
@@ -368,7 +403,10 @@ export const markLabAttendance = async (req, res) => {
       });
     }
 
-    const session = await LabSession.findById(sessionId);
+    const session = await LabSession.findOne({
+      _id: sessionId,
+      tenant: tenant._id
+    });
 
     if (!session) {
       return res.status(404).json({
@@ -403,6 +441,7 @@ export const markLabAttendance = async (req, res) => {
 
       student = await Student.findOne({
         _id: studentId,
+        tenant: tenant._id,
         department: session.department,
         batch: session.batch,
         section: session.section,
@@ -410,6 +449,7 @@ export const markLabAttendance = async (req, res) => {
       });
     } else if (rollNo) {
       student = await Student.findOne({
+        tenant: tenant._id,
         rollNo: rollNo.trim().toUpperCase(),
         department: session.department,
         batch: session.batch,
@@ -426,6 +466,7 @@ export const markLabAttendance = async (req, res) => {
     }
 
     const existingAttendance = await LabAttendance.findOne({
+      tenant: tenant._id,
       session: session._id,
       student: student._id
     });
@@ -438,6 +479,7 @@ export const markLabAttendance = async (req, res) => {
     }
 
     const attendance = await LabAttendance.create({
+      tenant: tenant._id,
       session: session._id,
       student: student._id,
       rollNo: student.rollNo.toUpperCase(),
@@ -452,7 +494,7 @@ export const markLabAttendance = async (req, res) => {
       })
       .populate({
         path: "markedBy",
-        select: "fullName email"
+        select: "username email"
       });
 
     return res.status(201).json({
@@ -476,12 +518,10 @@ export const markLabAttendance = async (req, res) => {
   }
 };
 
-// @desc Remove attendance for a student from session
-// @route DELETE /api/lab-sessions/:sessionId/attendance/:studentId
-// @access Private
 export const removeLabAttendance = async (req, res) => {
   try {
     const { sessionId, studentId } = req.params;
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId) || !isValidObjectId(studentId)) {
       return res.status(400).json({
@@ -491,6 +531,7 @@ export const removeLabAttendance = async (req, res) => {
     }
 
     const attendance = await LabAttendance.findOneAndDelete({
+      tenant: tenant._id,
       session: sessionId,
       student: studentId
     });
@@ -515,13 +556,11 @@ export const removeLabAttendance = async (req, res) => {
   }
 };
 
-// @desc Update lab session status
-// @route PATCH /api/lab-sessions/:sessionId/status
-// @access Private
 export const updateLabSessionStatus = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { status } = req.body;
+    const tenant = req.tenant;
 
     if (!isValidObjectId(sessionId)) {
       return res.status(400).json({
@@ -537,8 +576,11 @@ export const updateLabSessionStatus = async (req, res) => {
       });
     }
 
-    const session = await LabSession.findByIdAndUpdate(
-      sessionId,
+    const session = await LabSession.findOneAndUpdate(
+      {
+        _id: sessionId,
+        tenant: tenant._id
+      },
       { status },
       { new: true, runValidators: true }
     ).populate(populateSessionRefs);

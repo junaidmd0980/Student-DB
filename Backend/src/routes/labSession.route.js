@@ -1,3 +1,4 @@
+// routes/labSession.router.js
 import express from "express";
 import {
   createLabSession,
@@ -9,16 +10,24 @@ import {
   removeLabAttendance,
   updateLabSessionStatus
 } from "../controllers/labSession.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { requireTenantAccess } from "../middlewares/tenantAccess.js";
+import { requireTenantFacultyOrAbove } from "../middlewares/tenantRoles.js";
 
 const router = express.Router();
 
-router.post("/", createLabSession);
+router.use(protect);
+router.use(requireTenantAccess);
+
+router.post("/", requireTenantFacultyOrAbove, createLabSession);
+router.put("/:sessionId", requireTenantFacultyOrAbove, updateLabSession);
+router.delete("/:sessionId", requireTenantFacultyOrAbove, deleteLabSession);
+
+router.post("/:sessionId/attendance", requireTenantFacultyOrAbove, markLabAttendance);
+router.delete("/:sessionId/attendance/:studentId", requireTenantFacultyOrAbove, removeLabAttendance);
+router.patch("/:sessionId/status", requireTenantFacultyOrAbove, updateLabSessionStatus);
+
 router.get("/", getLabSessions);
 router.get("/:sessionId", getLabSessionById);
-router.put("/:sessionId", updateLabSession);
-router.delete("/:sessionId", deleteLabSession);
-router.post("/:sessionId/attendance", markLabAttendance);
-router.delete("/:sessionId/attendance/:studentId", removeLabAttendance);
-router.patch("/:sessionId/status", updateLabSessionStatus);
 
 export default router;

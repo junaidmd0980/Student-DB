@@ -6,6 +6,7 @@ import Batch from "../models/batch.model.js";
 export const createSection = async (req, res) => {
   try {
     const { name, department, batch, status } = req.body;
+    const tenant = req.tenant;
 
     if (!name || !department || !batch) {
       return res.status(400).json({
@@ -24,25 +25,35 @@ export const createSection = async (req, res) => {
       });
     }
 
-    const departmentExists = await Department.findById(department);
-    if (!departmentExists) {
+    const departmentDoc = await Department.findOne({
+      _id: department,
+      tenant: tenant._id
+    });
+
+    if (!departmentDoc) {
       return res.status(404).json({
         success: false,
-        message: "Department not found"
+        message: "Department not found in this organization"
       });
     }
 
-    const batchExists = await Batch.findOne({ _id: batch, department });
-    if (!batchExists) {
+    const batchDoc = await Batch.findOne({
+      _id: batch,
+      tenant: tenant._id,
+      department
+    });
+
+    if (!batchDoc) {
       return res.status(404).json({
         success: false,
-        message: "Batch not found for selected department"
+        message: "Batch not found for selected department in this organization"
       });
     }
 
-    const trimmedName = name.trim().toUpperCase();
+    const trimmedName = name.trim();
 
     const existingSection = await Section.findOne({
+      tenant: tenant._id,
       name: trimmedName,
       department,
       batch
@@ -56,6 +67,7 @@ export const createSection = async (req, res) => {
     }
 
     const section = await Section.create({
+      tenant: tenant._id,
       name: trimmedName,
       department,
       batch,
@@ -82,14 +94,15 @@ export const createSection = async (req, res) => {
 export const getSections = async (req, res) => {
   try {
     const { department, batch, status } = req.query;
+    const tenant = req.tenant;
 
-    const matchStage = {};
+    const matchStage = { tenant: tenant._id };
 
     if (department) {
       if (!mongoose.Types.ObjectId.isValid(department)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid department id",
+          message: "Invalid department id"
         });
       }
       matchStage.department = new mongoose.Types.ObjectId(department);
@@ -99,7 +112,7 @@ export const getSections = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(batch)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid batch id",
+          message: "Invalid batch id"
         });
       }
       matchStage.batch = new mongoose.Types.ObjectId(batch);
@@ -110,71 +123,96 @@ export const getSections = async (req, res) => {
     }
 
     const sections = await Section.aggregate([
-      {
-        $match: matchStage,
-      },
+      { $match: matchStage },
       {
         $lookup: {
           from: "departments",
-          localField: "department",
-          foreignField: "_id",
-          as: "department",
-        },
+          let: { deptId: "$department" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$_id", "$$deptId"] },
+                    { $eq: ["$tenant", tenant._id] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "department"
+        }
       },
       {
         $unwind: {
           path: "$department",
-          preserveNullAndEmptyArrays: true,
-        },
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
           from: "batches",
-          localField: "batch",
-          foreignField: "_id",
-          as: "batch",
-        },
+          let: { batchId: "$batch" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$_id", "$$batchId"] },
+                    { $eq: ["$tenant", tenant._id] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "batch"
+        }
       },
       {
         $unwind: {
           path: "$batch",
-          preserveNullAndEmptyArrays: true,
-        },
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
           from: "students",
-          localField: "_id",
-          foreignField: "section",
-          as: "students",
-        },
+          let: { sectionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$tenant", tenant._id] },
+                    { $eq: ["$section", "$$sectionId"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "students"
+        }
       },
-      {
-        $addFields: {
-          studentCount: { $size: "$students" },
-        },
-      },
+      { $addFields: { studentCount: { $size: "$students" } } },
       {
         $project: {
           students: 0,
           "department.__v": 0,
-          "batch.__v": 0,
-        },
+          "batch.__v": 0
+        }
       },
-      {
-        $sort: { name: 1 },
-      },
+      { $sort: { name: 1 } }
     ]);
 
     return res.status(200).json({
       success: true,
       count: sections.length,
-      data: sections,
+      data: sections
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message
     });
   }
 };
@@ -183,6 +221,7 @@ export const updateSection = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, department, batch, status } = req.body;
+    const tenant = req.tenant;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -208,25 +247,35 @@ export const updateSection = async (req, res) => {
       });
     }
 
-    const departmentExists = await Department.findById(department);
-    if (!departmentExists) {
+    const departmentDoc = await Department.findOne({
+      _id: department,
+      tenant: tenant._id
+    });
+
+    if (!departmentDoc) {
       return res.status(404).json({
         success: false,
-        message: "Department not found"
+        message: "Department not found in this organization"
       });
     }
 
-    const batchExists = await Batch.findOne({ _id: batch, department });
-    if (!batchExists) {
+    const batchDoc = await Batch.findOne({
+      _id: batch,
+      tenant: tenant._id,
+      department
+    });
+
+    if (!batchDoc) {
       return res.status(404).json({
         success: false,
-        message: "Batch not found for selected department"
+        message: "Batch not found for selected department in this organization"
       });
     }
 
-    const trimmedName = name.trim().toUpperCase();
+    const trimmedName = name.trim();
 
     const existingSection = await Section.findOne({
+      tenant: tenant._id,
       name: trimmedName,
       department,
       batch,
@@ -240,8 +289,11 @@ export const updateSection = async (req, res) => {
       });
     }
 
-    const updatedSection = await Section.findByIdAndUpdate(
-      id,
+    const updatedSection = await Section.findOneAndUpdate(
+      {
+        _id: id,
+        tenant: tenant._id
+      },
       {
         name: trimmedName,
         department,
@@ -279,6 +331,7 @@ export const updateSection = async (req, res) => {
 export const deleteSection = async (req, res) => {
   try {
     const { id } = req.params;
+    const tenant = req.tenant;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -287,7 +340,10 @@ export const deleteSection = async (req, res) => {
       });
     }
 
-    const deletedSection = await Section.findByIdAndDelete(id);
+    const deletedSection = await Section.findOneAndDelete({
+      _id: id,
+      tenant: tenant._id
+    });
 
     if (!deletedSection) {
       return res.status(404).json({

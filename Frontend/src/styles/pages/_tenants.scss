@@ -1,0 +1,359 @@
+@use "../abstracts/variables" as v;
+
+.tenants-page {
+  .container {
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem 0;
+  }
+
+  .page-title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 900;
+    color: v.$text-color;
+  }
+
+  .page-subtitle {
+    margin: 0;
+    color: v.$secondary-color;
+    max-width: 760px;
+    line-height: 1.7;
+  }
+
+  .create-tenant-form {
+    display: grid;
+    gap: 1rem;
+    padding: 1.75rem;
+    background: v.$surface-color;
+    border-radius: 24px;
+    border: 1px solid v.$border-color;
+  }
+
+  .tenant-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .tenant-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-radius: 20px;
+    border: 1px solid v.$border-color;
+    background: v.$surface-color;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    &--active {
+      border-color: v.$primary-color;
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .meta {
+      color: v.$secondary-color;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    button {
+      min-width: 110px;
+      padding: 0.65rem 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: v.$primary-color;
+      color: #fff;
+      font-weight: 700;
+    }
+  }
+
+  .tenant-controls {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+
+    .tenant-card {
+      padding: 1.5rem;
+      border-radius: 24px;
+      border: 1px solid v.$border-color;
+      background: v.$surface-color;
+    }
+
+    .tenant-card h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .user-management {
+      display: grid;
+      gap: 1rem;
+
+      .user-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        border-radius: 18px;
+        background: rgba(248, 250, 252, 0.85);
+        border: 1px solid v.$border-color;
+      }
+
+      .user-info {
+        display: grid;
+        gap: 0.25rem;
+
+        .user-name {
+          font-weight: 700;
+          color: v.$text-color;
+        }
+
+        .user-meta {
+          color: v.$secondary-color;
+          font-size: 0.9rem;
+        }
+      }
+
+      .user-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  .tenant-settings-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .tenant-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .table-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 12px;
+    background: v.$primary-color;
+    color: #fff;
+    border: 1px solid v.$primary-color;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .btn-secondary {
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(248, 250, 252, 0.95);
+    cursor: pointer;
+  }
+
+  .btn-danger {
+    padding: 0.45rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: #fee2e2;
+    color: #8b1d1d;
+    cursor: pointer;
+  }
+
+  .filter-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .search-input {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 560px;
+
+    svg {
+      color: v.$secondary-color;
+    }
+
+    input {
+      border-radius: 12px;
+      padding: 0.6rem 0.9rem;
+      border: 1px solid v.$border-color;
+      background: rgba(248, 250, 252, 0.6);
+      min-height: 42px;
+      width: 100%;
+    }
+  }
+
+  .actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .tenant-count {
+    color: v.$secondary-color;
+    font-weight: 700;
+  }
+
+  .tenant-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .tenant-card-item {
+    padding: 1rem 1rem 1.25rem;
+    border-radius: 22px;
+    border: 1px solid v.$border-color;
+    background: v.$surface-color;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    &.tenant-item--active {
+      border-color: v.$primary-color;
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    .tenant-main {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 0.4rem;
+      color: v.$text-color;
+    }
+
+    .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      color: v.$secondary-color;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .tenant-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tenant-actions button {
+      min-width: auto;
+      height: 36px;
+      padding: 0 1rem;
+      font-size: 0.9rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tenant-actions button:hover {
+      transform: translateY(-1px);
+    }
+
+    .tenant-actions .primary-btn {
+      background: v.$primary-color;
+      color: #fff;
+      border-color: v.$primary-color;
+    }
+
+    .tenant-actions .secondary-btn {
+      background: rgba(248, 250, 252, 0.95);
+      color: v.$text-color;
+      border-color: rgba(148, 163, 184, 0.28);
+    }
+
+    .menu-wrapper {
+      position: relative;
+
+      .icon-btn {
+        background: rgba(248, 250, 252, 0.95);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        padding: 0.55rem;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      .menu-popover {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        background: v.$surface-color;
+        border: 1px solid v.$border-color;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.1);
+        display: flex;
+        flex-direction: column;
+        min-width: 170px;
+        z-index: 40;
+
+        button {
+          background: transparent;
+          border: none;
+          padding: 0.85rem 1rem;
+          text-align: left;
+          cursor: pointer;
+          color: v.$text-color;
+          transition: background 0.2s ease;
+
+          &:hover {
+            background: rgba(241, 245, 249, 0.9);
+          }
+        }
+      }
+    }
+  }
+}

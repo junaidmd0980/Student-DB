@@ -36,6 +36,7 @@ function StudentList({
   const [editForm, setEditForm] = useState({
     fullName: "",
     rollNo: "",
+    gender: "",
     email: "",
     phone: "",
     department: "",
@@ -115,6 +116,7 @@ function StudentList({
     setEditForm({
       fullName: student.fullName || "",
       rollNo: student.rollNo || "",
+      gender: student.gender || "",
       email: student.email || "",
       phone: student.phone || "",
       department: student.department?._id || student.department || "",
@@ -155,6 +157,7 @@ function StudentList({
       const payload = {
         fullName: editForm.fullName,
         rollNo: editForm.rollNo,
+        gender: editForm.gender,
         email: editForm.email,
         phone: editForm.phone,
         department: editForm.department,
@@ -224,6 +227,7 @@ function StudentList({
     setEditForm({
       fullName: "",
       rollNo: "",
+      gender: "",
       email: "",
       phone: "",
       department: "",
@@ -369,6 +373,19 @@ function StudentList({
                     value={editForm.rollNo}
                     onChange={handleEditChange}
                     required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="gender">Gender</label>
+                  <CustomSelect
+                    name="gender"
+                    value={editForm.gender}
+                    onChange={handleEditChange}
+                    options={['Male', 'Female', 'Other'].map((gender) => ({
+                      label: gender,
+                      value: gender,
+                    }))}
                   />
                 </div>
 

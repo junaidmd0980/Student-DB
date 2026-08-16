@@ -1,11 +1,17 @@
+// models/Student.js
 import mongoose from "mongoose";
 
 const studentSchema = new mongoose.Schema(
   {
+    tenant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tenant",
+      required: true,
+      index: true
+    },
     rollNo: {
       type: String,
       required: [true, "Roll number is required"],
-      unique: true,
       trim: true
     },
     fullName: {
@@ -53,6 +59,8 @@ const studentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Student = mongoose.model("Student", studentSchema);
+// Roll number unique per tenant
+studentSchema.index({ tenant: 1, rollNo: 1 }, { unique: true });
 
+const Student = mongoose.model("Student", studentSchema);
 export default Student;

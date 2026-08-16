@@ -1,0 +1,399 @@
+$font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+$color-bg: #f8fafc;
+$color-white: #ffffff;
+$color-text-main: #334155;
+$color-text-dark: #0f172a;
+$color-text-muted: #64748b;
+
+$color-blue-primary: #2563eb;
+$color-blue-hover: #1d4ed8;
+$color-blue-light: #eff6ff;
+$color-blue-accent: rgba(37, 99, 213, 0.2);
+
+$color-indigo: #4f46e5;
+$color-border: #e2e8f0;
+$max-width: 1280px;
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin transition-standard {
+  transition: all 0.2s ease-in-out;
+}
+
+// --- GLOBAL STYLES ---
+.landing-wrapper {
+  min-height: 100vh;
+  background-color: $color-bg;
+  font-family: $font-sans;
+  color: $color-text-main;
+  
+  ::selection {
+    background-color: $color-blue-primary;
+    color: $color-white;
+  }
+}
+
+// --- BUTTONS ---
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: $color-blue-primary;
+  color: $color-white;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px $color-blue-accent;
+  @include transition-standard;
+
+  &:hover {
+    background-color: $color-blue-hover;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.btn-sm {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+
+  &.btn-lg {
+    padding: 14px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+}
+
+.btn-secondary {
+  &.btn-lg {
+    background-color: $color-white;
+    color: #475569;
+    font-weight: 600;
+    padding: 14px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid $color-border;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    @include transition-standard;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+}
+
+.btn-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-muted;
+  @include transition-standard;
+
+  &:hover {
+    color: $color-text-dark;
+  }
+}
+
+// --- NAVIGATION BAR ---
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid $color-border;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+
+  .navbar-container {
+    max-width: $max-width;
+    width: 100%;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    @include flex-between;
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .logo-icon {
+      display: flex;
+      height: 36px;
+      width: 36px;
+      align-items: center;
+      justify-content: center;
+      rounded-grid: 8px;
+      border-radius: 8px;
+      background-color: $color-blue-primary;
+      color: $color-white;
+      box-shadow: 0 4px 6px -1px $color-blue-accent;
+
+      svg {
+        height: 20px;
+        width: 20px;
+      }
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+
+      .brand-name {
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: $color-text-dark;
+      }
+
+      .brand-sub {
+        font-size: 10px;
+        color: $color-text-muted;
+        font-weight: 500;
+        margin-top: -4px;
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+}
+
+// --- HERO SECTION ---
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  padding: 64px 24px 96px;
+  text-align: center;
+
+  @media (min-width: 1024px) {
+    padding-top: 96px;
+  }
+
+  .hero-container {
+    max-width: 768px;
+    margin: 0 auto;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    background-color: $color-blue-light;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-blue-hover;
+    box-shadow: inset 0 0 0 1px rgba(29, 78, 216, 0.1);
+  }
+
+  .hero-title {
+    margin-top: 24px;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: $color-text-dark;
+    line-height: 1.15;
+
+    @media (min-width: 640px) { font-size: 48px; }
+    @media (min-width: 1024px) { font-size: 60px; }
+
+    .gradient-text {
+      background: linear-gradient(to right, $color-blue-primary, $color-indigo);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .hero-description {
+    margin: 24px auto 0;
+    font-size: 18px;
+    line-height: 1.75;
+    color: $color-text-main;
+    max-width: 640px;
+  }
+
+  .hero-buttons {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+// --- ROLE PORTALS SECTION ---
+.portals-section {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 48px 24px;
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 48px;
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: $color-text-dark;
+      @media (min-width: 640px) { font-size: 30px; }
+    }
+
+    .section-subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      color: $color-text-muted;
+    }
+  }
+
+  .portals-grid {
+    display: grid;
+    gap: 24px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .portal-card {
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    @include transition-standard;
+
+    &:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border-color: #cbd5e1;
+    }
+
+    .card-icon {
+      display: flex;
+      height: 48px;
+      width: 48px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: $color-white;
+
+      svg {
+        height: 24px;
+        width: 24px;
+      }
+
+      &.icon-admin { background-color: $color-text-dark; }
+      &.icon-instructor { background-color: $color-blue-primary; }
+      &.icon-student { background-color: $color-indigo; }
+    }
+
+    .card-title {
+      margin-top: 24px;
+      font-weight: 700;
+      color: $color-text-dark;
+      font-size: 18px;
+    }
+
+    .card-description {
+      margin-top: 8px;
+      font-size: 14px;
+      color: $color-text-muted;
+      line-height: 1.6;
+    }
+
+    .card-action {
+      margin-top: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: $color-text-dark;
+      @include transition-standard;
+
+      &.hover-blue {
+        &:hover { color: $color-blue-primary; }
+      }
+      &.force-blue {
+        color: $color-blue-primary;
+      }
+      &.hover-indigo {
+        &:hover { color: $color-indigo; }
+      }
+    }
+  }
+}
+
+// --- CORE FEATURES SECTION ---
+.features-section {
+  background-color: $color-white;
+  border-top: 1px solid $color-border;
+  border-bottom: 1px solid $color-border;
+  padding: 80px 24px;
+  margin-top: 48px;
+
+  .features-container {
+    max-width: $max-width;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    gap: 48px;
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 16px;
+
+    .feature-icon {
+      display: flex;
+      height: 40px;
+      width: 40px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background-color: $color-blue-light;
+      color: $color-blue-primary;
+
+      svg {
+        height: 20px;
+        width: 20px;
+      }
+    }
+
+    .feature-content {
+      .feature-title {
+        font-weight: 700;
+        color: $color-text-dark;
+      }
+
+      .feature-description {
+        margin-top: 6px;
+        font-size: 14px;
+        color: $color-text-muted;
+        line-height: 1.6;
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 @use "../abstracts/variables" as v;
 
-// ===== SCROLLBAR FIX - NO SIDE SCROLLBAR =====
+
 html,
 body {
   overflow-x: hidden;
@@ -19,7 +19,7 @@ body {
   backdrop-filter: blur(4px);
   overflow-x: hidden;
 
-  // HIDE OVERLAY SCROLLBAR
+  
   &::-webkit-scrollbar {
     display: none;
   }
@@ -39,7 +39,7 @@ body {
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // HIDE MODAL CARD SCROLLBAR
+ 
   &::-webkit-scrollbar {
     display: none;
   }
@@ -52,10 +52,10 @@ body {
 .modal-card,
 .edit-form {
   &::-webkit-scrollbar {
-    display: none; // Chrome, Safari, Edge
+    display: none; 
   }
-  scrollbar-width: none; // Firefox
-  -ms-overflow-style: none; // IE/Edge
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
 // ===== TABLE STYLING =====
