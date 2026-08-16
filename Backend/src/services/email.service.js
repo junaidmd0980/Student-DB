@@ -3,17 +3,19 @@ import config from '../config/config.js';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,              // <--- Change from 465 to 587
-    secure: false,          // <--- Must be false for port 587
-    family: 4,
+    port: 587,
+    secure: false,
     auth: {
         type: 'OAuth2',
         user: config.GOOGLE_USER,
         clientId: config.GOOGLE_CLIENT_ID,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
         refreshToken: config.GOOGLE_REFRESH_TOKEN
+    },
+    tls: {
+        family: 4 // <--- Forces IPv4 socket connection
     }
-})
+});
 
 transporter.verify((error, success) => {
     if (error) {
